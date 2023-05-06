@@ -1,0 +1,21 @@
+using Core.Models;
+
+namespace UI.Interfaces
+{
+    public interface IConsoleManager<TEntity> where TEntity : BaseEntity
+    {
+        Task PerformOperationsAsync();
+
+        Task<IEnumerable<TEntity>> GetAllAsync();
+
+        Task<TEntity> GetByIdAsync(Guid id);
+
+        Task<TEntity> GetByPredicateAsync(Func<TEntity, bool> predicate);
+
+        Task CreateAsync(TEntity entity);
+
+        Task UpdateAsync(Guid id, TEntity entity);
+
+        Task DeleteAsync(Guid id);
+    }
+}
