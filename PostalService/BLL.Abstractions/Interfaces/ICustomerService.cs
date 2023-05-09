@@ -5,10 +5,16 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface ICustomerService : IGenericService<Customer>
     {
-        Task<Customer> RegisterCustomer(Customer customer);
+        Task<Result<bool>> RegisterCustomer(string name, string surname, string email, Card cardType, double balance);
         
-        Task<Customer> EditCustomer(Customer customer);
+        Task<Result<bool>> UpdateBalance(string name, string surname, double balance);
         
         Task<List<Customer>> GetCustomersByCardType(Card cardType);
+        
+        Task<List<Customer>> GetCustomersByBalance(double balance);
+        
+        Task<Result<Customer>> GetCustomerByName(string name, string surname);
+
+        Task<Result<bool>> DeleteCustomer(string name, string surname);
     }
 }

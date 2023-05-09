@@ -1,6 +1,7 @@
 using BLL.Abstractions.Interfaces;
 using Core.Enums;
 using Core.Models;
+using UI.ConsoleHandlers;
 using UI.Interfaces;
 
 namespace UI.ConsoleManagers
@@ -17,32 +18,36 @@ namespace UI.ConsoleManagers
             {
                 { "1", DisplayAllParcelsAsync },
                 { "2", DisplayAllByTypeAsync },
-                { "3", DisplayAllByCustomerAsync },
-                { "4", DisplayAllByWeightAsync },
-                { "5", DisplayAllByDestinationAsync },
-                { "6", CreateParcelAsync },
-                { "7", DeleteParcelAsync },
+                { "3", DisplayAllByWeightAsync },
+                { "4", DisplayAllByDestinationAsync },
+                { "5", CreateParcelAsync },
+                { "6", DeleteParcelAsync },
             };
 
-            Console.Clear();
-            
             while (true)
             {
-                ConsoleHandler.PrintCaption("Parcels management");
+                ConsoleHandler.Clear();
+                ConsoleHandler.PrintCaption(@"
+                                ██████╗  █████╗ ██████╗  ██████╗███████╗██╗     ███████╗
+                                ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██║     ██╔════╝
+                                ██████╔╝███████║██████╔╝██║     █████╗  ██║     ███████╗
+                                ██╔═══╝ ██╔══██║██╔══██╗██║     ██╔══╝  ██║     ╚════██║
+                                ██║     ██║  ██║██║  ██║╚██████╗███████╗███████╗███████║
+                                ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝╚══════╝
+                                        ");
                 ConsoleHandler.PrintInfo(" |=> 1. Display all parcels");
                 ConsoleHandler.PrintInfo(" |=> 2. Display all parcels by type");
-                ConsoleHandler.PrintInfo(" |=> 3. Display all parcels by customer");
-                ConsoleHandler.PrintInfo(" |=> 4. Display all parcels by weight");
-                ConsoleHandler.PrintInfo(" |=> 5. Display all parcels by destination");
-                ConsoleHandler.PrintInfo(" |=> 6. Create a new user");
-                ConsoleHandler.PrintInfo(" |=> 7. Delete a user");
-                ConsoleHandler.PrintInfo(" |=> 8. Exit\n");;
+                ConsoleHandler.PrintInfo(" |=> 3. Display all parcels by weight");
+                ConsoleHandler.PrintInfo(" |=> 4. Display all parcels by destination");
+                ConsoleHandler.PrintInfo(" |=> 5. Create a new parcel");
+                ConsoleHandler.PrintInfo(" |=> 6. Delete a parcel");
+                ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");;
 
                 ConsoleHandler.Print("Enter the operation number: ");
                 var input = Console.ReadLine();
-                Console.Clear();
+                ConsoleHandler.Clear();
 
-                if (input == "8")
+                if (input == "9")
                 {
                     break;
                 }
@@ -50,6 +55,8 @@ namespace UI.ConsoleManagers
                 if (actions.ContainsKey(input))
                 {
                     await actions[input]();
+                    ConsoleHandler.Print("Press any key to continue...");
+                    Console.ReadLine();
                 }
                 else
                 {
@@ -66,7 +73,7 @@ namespace UI.ConsoleManagers
         
         private async Task DisplayAllByDestinationAsync()
         {
-            var destination = ConsoleHandler.AskForString("Enter destination:",@"^[a-zA-Z]{4,}$");
+            var destination = ConsoleHandler.AskForPostalCode("Enter destination (e.g 61072):");
             var parcels = await Service.GetParcelsByDestination(destination);
             ConsoleHandler.PrintCollection(parcels);
         }
@@ -75,13 +82,6 @@ namespace UI.ConsoleManagers
         {
             var weight = ConsoleHandler.AskForDouble("Enter boundary (max) weight:");
             var parcels = await Service.GetParcelsByWeight(weight);
-            ConsoleHandler.PrintCollection(parcels);
-        }
-
-        private async Task DisplayAllByCustomerAsync()
-        {
-            var customerName = ConsoleHandler.AskForString("Enter customer name:",@"^[a-zA-Z]{4,}$");
-            var parcels = await Service.GetParcelsByCustomer(customerName);
             ConsoleHandler.PrintCollection(parcels);
         }
 
@@ -95,16 +95,14 @@ namespace UI.ConsoleManagers
         private async Task CreateParcelAsync()
         {
             var name = ConsoleHandler.AskForString("Enter name:",@"^[a-zA-Z]{4,}$");
-            var description = ConsoleHandler.AskForString("Enter description:",@"^[a-zA-Z]{4,}$");
+            var description = ConsoleHandler.AskForString("Enter description (min 3 words):",@"^(\w+\s){2,}\w+$");
             var destination = ConsoleHandler.AskForPostalCode("Enter destination (e.g 61072):");
             var weight = ConsoleHandler.AskForDouble("Enter weight:");
             var parcelType = ConsoleHandler.AskForEnum<ParcelType>("Enter parcel type:");
-            var customerName = ConsoleHandler.AskForString("Enter customer name:",@"^[a-zA-Z]{4,}$");
-            var customerSurname = ConsoleHandler.AskForString("Enter customer surname:",@"^[a-zA-Z]{4,}$");
             
-            Console.Clear();
+            ConsoleHandler.Clear();
             
-            var result = await Service.CreateParcel(name, description, destination, weight, parcelType, customerName, customerSurname);
+            var result = await Service.CreateParcel(name, description, destination, weight, parcelType);
             
             if (result.IsSuccessful)
             {
@@ -120,7 +118,7 @@ namespace UI.ConsoleManagers
         {
             var name = ConsoleHandler.AskForString("Enter name:",@"^[a-zA-Z]{4,}$");
             
-            Console.Clear();
+            ConsoleHandler.Clear();
             
             var result = await Service.DeleteParcel(name);
             

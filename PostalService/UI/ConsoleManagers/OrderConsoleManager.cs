@@ -1,5 +1,6 @@
 using BLL.Abstractions.Interfaces;
 using Core.Models;
+using UI.ConsoleHandlers;
 using UI.Interfaces;
 
 namespace UI.ConsoleManagers
@@ -14,26 +15,36 @@ namespace UI.ConsoleManagers
         {
             Dictionary<string, Func<Task>> actions = new Dictionary<string, Func<Task>>
             {
-                { "1", DisplayAllUsersAsync },
-                { "2", CreateUserAsync },
-                { "3", UpdateUserAsync },
-                { "4", DeleteUserAsync },
+                { "1", DisplayAllOrdersAsync },
+                { "2", DisplayByName },
+                { "3", CreateOrderAsync },
+                { "4", UpdateOrderAsync },
+                { "5", DeleteOrderAsync },
             };
 
             while (true)
             {
-                Console.Clear();
-                ConsoleHandler.PrintCaption("Orders management");
-                ConsoleHandler.PrintInfo(" => 1. Display all users");
-                ConsoleHandler.PrintInfo(" => 2. Create a new user");
-                ConsoleHandler.PrintInfo(" => 3. Update a user");
-                ConsoleHandler.PrintInfo(" => 4. Delete a user");
-                ConsoleHandler.PrintInfo(" => 5. Exit\n");
+                ConsoleHandler.Clear();
+                ConsoleHandler.PrintCaption(@"
+                                ██████╗ ██████╗ ██████╗ ███████╗██████╗ ███████╗
+                                ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝
+                                ██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝███████╗
+                                ██║   ██║██╔══██╗██║  ██║██╔══╝  ██╔══██╗╚════██║
+                                ╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║███████║
+                                 ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝                              
+                                ");
+                ConsoleHandler.PrintInfo(" |=> 1. Display all orders");
+                ConsoleHandler.PrintInfo(" |=> 2. Display order by name");
+                ConsoleHandler.PrintInfo(" |=> 3. Create a new order");
+                ConsoleHandler.PrintInfo(" |=> 4. Add a parcel to order");
+                ConsoleHandler.PrintInfo(" |=> 5. Delete order");
+                ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");
 
                 ConsoleHandler.Print("Enter the operation number: ");
                 var input = Console.ReadLine();
+                ConsoleHandler.Clear();
 
-                if (input == "5")
+                if (input == "9")
                 {
                     break;
                 }
@@ -41,6 +52,8 @@ namespace UI.ConsoleManagers
                 if (actions.ContainsKey(input))
                 {
                     await actions[input]();
+                    ConsoleHandler.Print("Press any key to continue...");
+                    Console.ReadLine();
                 }
                 else
                 {
@@ -49,22 +62,82 @@ namespace UI.ConsoleManagers
             }
         }
 
-        private async Task DisplayAllUsersAsync()
+        private async Task DisplayByName()
         {
-
+            var orderName = ConsoleHandler.AskForString("Enter the order name", @"^[a-zA-Z]{4,}$");
+            var orderResult = await Service.GetByName(orderName);
+            if (orderResult.IsSuccessful)
+            {
+                ConsoleHandler.Print(orderResult.Data.ToString());
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(orderResult.Message);
+            }
         }
 
-        private async Task CreateUserAsync()
+        private async Task DisplayAllOrdersAsync()
         {
+            var orders = await Service.GetAll();
+            ConsoleHandler.PrintCollection(orders);
+        }
+
+        private async Task CreateOrderAsync()
+        {
+            var orderName = ConsoleHandler.AskForString("Enter the order name", @"^[a-zA-Z]{4,}$");
+            var customerName = ConsoleHandler.AskForString("Enter the customer name", @"^[a-zA-Z]{4,}$");
+            var customerSurname = ConsoleHandler.AskForString("Enter the customer surname", @"^[a-zA-Z]{4,}$");
+            
+            ConsoleHandler.Clear();
+            
+            var result = await Service.CreateOrder(orderName, customerName, customerSurname);
+            
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess("Order created successfully.");
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
+            }
+        }
+
+        private async Task UpdateOrderAsync()
+        {
+            var orderName = ConsoleHandler.AskForString("Enter the order name", @"^[a-zA-Z]{4,}$");
+            var parcelName = ConsoleHandler.AskForString("Enter the parcel name", @"^[a-zA-Z]{4,}$");
+            
+            ConsoleHandler.Clear();
+            
+            var result = await Service.AddToOrder(orderName, parcelName);
+            
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess($"{parcelName} added to {orderName} successfully.");
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
+            }
             
         }
 
-        private async Task UpdateUserAsync()
+        private async Task DeleteOrderAsync()
         {
-        }
-
-        private async Task DeleteUserAsync()
-        {
+            var orderName = ConsoleHandler.AskForString("Enter the order name", @"^[a-zA-Z]{4,}$");
+            
+            ConsoleHandler.Clear();
+            
+            var result = await Service.DeleteOrder(orderName);
+            
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess("Order deleted successfully.");
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
+            }
         }
 
     }

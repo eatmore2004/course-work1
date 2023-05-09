@@ -1,13 +1,18 @@
 using System.Text.RegularExpressions;
-using Core.Models;
 
-namespace UI.ConsoleManagers
+namespace UI.ConsoleHandlers
 {
     public static class ConsoleHandler
     {
+        public static void Clear()
+        {
+            Console.Write("\x1B[2J");
+            Console.SetCursorPosition(0, 0);
+            Console.Write("\x1B[3J");
+        }
+        
         public static void Print(string? message)
         {
-            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(message);
         }
         
@@ -15,29 +20,26 @@ namespace UI.ConsoleManagers
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
         }
         
         public static void PrintCaption(string? message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+            Console.ResetColor();        }
         
         public static void RaiseSuccess(string? message)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+            Console.ResetColor();        }
 
         public static void RaiseError(string? error)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(error);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+            Console.ResetColor();        }
 
         public static string AskForString(string caption, string format)
         {
@@ -71,20 +73,39 @@ namespace UI.ConsoleManagers
                 {
                     return result;
                 }
-                else
-                {
-                    RaiseError("Invalid input!");
-                }
+
+                RaiseError("Invalid input!");
             }
         }
 
 
         public static void PrintCollection<T>(List<T> collection)
         {
+            if (collection.Count == 0)
+            {
+                RaiseError($"No {typeof(T).Name} found.");
+                return;
+            }
+
+            var colors = new[] { ConsoleColor.White, ConsoleColor.Cyan, ConsoleColor.DarkCyan};
+    
+            var currentColorIndex = 0;
+    
             foreach (var element in collection)
             {
+                Console.ForegroundColor = colors[currentColorIndex];
+        
                 Print(element?.ToString());
+        
+                currentColorIndex++;
+        
+                if (currentColorIndex >= colors.Length)
+                {
+                    currentColorIndex = 0;
+                }
             }
+
+            Console.ResetColor();
         }
 
         public static double AskForDouble(string caption)
@@ -95,7 +116,12 @@ namespace UI.ConsoleManagers
                 var input = Console.ReadLine();
                 if (double.TryParse(input, out double result))
                 {
-                    return result;
+                    if (result > 0)
+                    {
+                        return result;
+                    }
+                    
+                    RaiseError("Input must be a positive number!");
                 }
                 else
                 {
@@ -114,10 +140,8 @@ namespace UI.ConsoleManagers
                 {
                     return int.Parse(input);
                 }
-                else
-                {
-                    RaiseError("Invalid postal code!");
-                }
+
+                RaiseError("Invalid postal code!");
             }
         }
     }   
