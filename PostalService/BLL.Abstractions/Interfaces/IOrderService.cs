@@ -4,9 +4,10 @@ namespace BLL.Abstractions.Interfaces;
 
 public interface IOrderService : IGenericService<Order>
 {
-    Task<Order> CreateOrder(Order order);
+    Task<Result<bool>> CreateOrder(string orderName, string customerName, string customerSurname);
+        
+    Task<Result<bool>> AddToOrder(string orderName, string parcelName);
     
-    Task<Order> EditOrder(Order order);
-    
-    Task<Order> AddToOrder(Parcel parcel);
+    Task<Result<bool>> DeleteOrder(string orderName);
+    Task<Result<Order>> GetByName(string orderName);
 }

@@ -20,9 +20,8 @@ public class Staff : BaseEntity
     public override string ToString()
     {
         return "------------------------------\n" +
-               $"Staff position: {StaffPosition}\n" +
-               $"Name: {Name}\n" +
-               $"Surname: {Surname}\n"+
-               $"Email: {Email}\n";
+               $"| Staff position: {StaffPosition}\n" +
+               $"| Name: {Name} {Surname}\n" +
+               $"| Email: {Email}\n";
     }   
 }

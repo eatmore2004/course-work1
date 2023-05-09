@@ -1,3 +1,4 @@
+using UI.ConsoleHandlers;
 using UI.ConsoleManagers;
 
 namespace UI
@@ -24,15 +25,23 @@ namespace UI
         {
             while (true)
             {
-                Console.Clear();
-                ConsoleHandler.PrintCaption("Main Menu");
-                ConsoleHandler.PrintInfo(" => 1. Staff operations");
-                ConsoleHandler.PrintInfo(" => 2. Parcel operations");
-                ConsoleHandler.PrintInfo(" => 3. Order operations");
-                ConsoleHandler.PrintInfo(" => 4. Customer operations");
-                ConsoleHandler.PrintInfo(" => 5. Exit\n");
+                ConsoleHandler.Clear();
+                ConsoleHandler.PrintCaption(@"
+                                ███╗   ███╗███████╗███╗   ██╗██╗   ██╗
+                                ████╗ ████║██╔════╝████╗  ██║██║   ██║
+                                ██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║
+                                ██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║
+                                ██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝
+                                ╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ 
+                                      ");
+                ConsoleHandler.PrintInfo(" |=> 1. Staff operations");
+                ConsoleHandler.PrintInfo(" |=> 2. Parcel operations");
+                ConsoleHandler.PrintInfo(" |=> 3. Order operations");
+                ConsoleHandler.PrintInfo(" |=> 4. Customer operations");
+                ConsoleHandler.PrintInfo(" <= 5. Exit\n");
                 ConsoleHandler.Print("Enter the operation number: ");
                 var input = Console.ReadLine();
+                ConsoleHandler.Clear();
 
                 switch (input)
                 {
@@ -49,7 +58,7 @@ namespace UI
                         await _customerConsoleManager.PerformOperationsAsync();
                         break;
                     case "5":
-                        Console.Clear();
+                        ConsoleHandler.Clear();
                         return;
                     default:
                         ConsoleHandler.RaiseError("Invalid operation number.");
