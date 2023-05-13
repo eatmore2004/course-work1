@@ -84,6 +84,12 @@ public class OrderService : GenericService<Order>, IOrderService
 
         try
         {
+            foreach (var parcel in order.Parcels)
+            {
+                parcel.IsLocked = false;
+                await _parcelService.Update(parcel.Id,parcel);
+            }
+            
             await Delete(order.Id);
             return new Result<bool>(true);
         }
@@ -99,5 +105,11 @@ public class OrderService : GenericService<Order>, IOrderService
         return (allOrders.Any(p => p.Name == orderName)) ? 
             new Result<Order>(true, allOrders.First(p => p.Name == orderName)) : 
             new Result<Order>(false,"Order not found");
+    }
+
+    public async Task<Result<string>> BringToPdf()
+    {
+        var result = await Repository.PackAllToPdf();
+        return result;
     }
 }

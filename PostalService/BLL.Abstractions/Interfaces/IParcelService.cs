@@ -16,4 +16,6 @@ public interface IParcelService : IGenericService<Parcel>
     Task<Result<Parcel>> GetParcelByName(string name);
     
     Task<Result<bool>> DeleteParcel(string parcelName);
+
+    Task<Result<string>> BringToPdf();
 }

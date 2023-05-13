@@ -25,7 +25,7 @@ public class Parcel : BaseEntity
     {
         var multiplier = Type switch
         {
-            ParcelType.Standard => 0.9,
+            ParcelType.Standard => 1,
             ParcelType.Fast => 1.2,
             ParcelType.Express => 1.5,
             ParcelType.Priority => 2.0,
@@ -33,18 +33,17 @@ public class Parcel : BaseEntity
         };
 
         var price = Math.Round(Weight * multiplier, 2, MidpointRounding.AwayFromZero);
-        return (price < 5) ? 5 : price;
+        return (price < 5) ? 5 * multiplier : price;
     }
 
     public override string ToString()
     {
-        return $"------------------------------\n" +
-               $"| Name: {Name}\n" +
-               $"| Description: {Description}\n" +
-               $"| Destination: {Destination}\n" +
-               $"| Weight: {Weight}\n" +
-               $"| Type: {Type}\n" +
-               $"| Price: {Price()} EUR\n" +
-               $"| In order: {IsLocked}\n";
+        return $" Name: {Name}\n" +
+               $" Description: {Description}\n" +
+               $" Destination: {Destination}\n" +
+               $" Weight: {Weight}\n" +
+               $" Type: {Type}\n" +
+               $" Price: {Price()} EUR\n" +
+               $" In order: {IsLocked}\n";
     }
 }

@@ -15,5 +15,7 @@ namespace DAL.Abstractions
         Task<Result<bool>> UpdateAsync(Guid id, T updatedObj);
         
         Task<Result<bool>> DeleteAsync(Guid id);
+        
+        Task<Result<string>> PackAllToPdf();
     }
 }

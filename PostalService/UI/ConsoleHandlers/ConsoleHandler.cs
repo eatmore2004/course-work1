@@ -94,7 +94,8 @@ namespace UI.ConsoleHandlers
             foreach (var element in collection)
             {
                 Console.ForegroundColor = colors[currentColorIndex];
-        
+
+                Print("---------------------------------");
                 Print(element?.ToString());
         
                 currentColorIndex++;

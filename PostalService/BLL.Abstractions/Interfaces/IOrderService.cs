@@ -9,5 +9,8 @@ public interface IOrderService : IGenericService<Order>
     Task<Result<bool>> AddToOrder(string orderName, string parcelName);
     
     Task<Result<bool>> DeleteOrder(string orderName);
+    
     Task<Result<Order>> GetByName(string orderName);
+    
+    Task<Result<string>> BringToPdf();
 }

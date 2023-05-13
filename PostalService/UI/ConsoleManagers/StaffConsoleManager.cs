@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using Core.Enums;
@@ -21,7 +22,8 @@ namespace UI.ConsoleManagers
                 { "2", DisplayByRoleAsync },
                 { "3", CreateStaffAsync },
                 { "4", UpdateStaffAsync },
-                { "5", DeleteStaffAsync },
+                { "5", BringToPdfAsync },
+                { "6", DeleteStaffAsync },
             };
             
             while (true)
@@ -39,7 +41,8 @@ namespace UI.ConsoleManagers
                 ConsoleHandler.PrintInfo(" |=> 2. Display by role staff");
                 ConsoleHandler.PrintInfo(" |=> 3. Create a new staff");
                 ConsoleHandler.PrintInfo(" |=> 4. Update a staff");
-                ConsoleHandler.PrintInfo(" |=> 5. Delete a staff");
+                ConsoleHandler.PrintInfo(" |=> 5. Bring all to PDF");
+                ConsoleHandler.PrintInfo(" |=> 6. Delete a staff");
                 ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");
 
                 ConsoleHandler.PrintCaption("Enter the operation number: ");
@@ -61,6 +64,24 @@ namespace UI.ConsoleManagers
                 {
                     Console.WriteLine("Invalid operation number.");
                 }
+            }
+        }
+        
+        private async Task BringToPdfAsync()
+        {
+            var result = await Service.BringToPdf();
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess($"Successfully packed to PDF ({result.Data})");
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = result.Data,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
             }
         }
 

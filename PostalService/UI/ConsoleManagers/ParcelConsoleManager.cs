@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BLL.Abstractions.Interfaces;
 using Core.Enums;
 using Core.Models;
@@ -21,7 +22,8 @@ namespace UI.ConsoleManagers
                 { "3", DisplayAllByWeightAsync },
                 { "4", DisplayAllByDestinationAsync },
                 { "5", CreateParcelAsync },
-                { "6", DeleteParcelAsync },
+                { "6", BringToPdfAsync },
+                { "7", DeleteParcelAsync },
             };
 
             while (true)
@@ -40,7 +42,8 @@ namespace UI.ConsoleManagers
                 ConsoleHandler.PrintInfo(" |=> 3. Display all parcels by weight");
                 ConsoleHandler.PrintInfo(" |=> 4. Display all parcels by destination");
                 ConsoleHandler.PrintInfo(" |=> 5. Create a new parcel");
-                ConsoleHandler.PrintInfo(" |=> 6. Delete a parcel");
+                ConsoleHandler.PrintInfo(" |=> 6. Bring all to PDF");
+                ConsoleHandler.PrintInfo(" |=> 7. Delete a parcel");
                 ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");;
 
                 ConsoleHandler.Print("Enter the operation number: ");
@@ -65,6 +68,24 @@ namespace UI.ConsoleManagers
             }
         }
 
+        private async Task BringToPdfAsync()
+        {
+            var result = await Service.BringToPdf();
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess($"Successfully packed to PDF ({result.Data})");
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = result.Data,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
+            }
+        }
+        
         private async Task DisplayAllParcelsAsync()
         {
             var parcels = await Service.GetAll();

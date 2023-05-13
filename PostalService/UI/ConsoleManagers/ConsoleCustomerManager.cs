@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BLL.Abstractions.Interfaces;
 using Core.Enums;
 using Core.Models;
@@ -21,7 +22,8 @@ namespace UI.ConsoleManagers
                 { "3", DisplayAllByBalanceAsync },
                 { "4", CreateCustomerAsync },
                 { "5", UpdateCustomerAsync },
-                { "6", DeleteCustomerAsync },
+                { "6", BringToPdfAsync },
+                { "7", DeleteCustomerAsync },
             };
 
             while (true)
@@ -40,7 +42,8 @@ namespace UI.ConsoleManagers
                 ConsoleHandler.PrintInfo(" |=> 3. Display all customers by balance");
                 ConsoleHandler.PrintInfo(" |=> 4. Create a new customer");
                 ConsoleHandler.PrintInfo(" |=> 5. Update a customer balance");
-                ConsoleHandler.PrintInfo(" |=> 6. Delete a customer");
+                ConsoleHandler.PrintInfo(" |=> 6. Bring all to PDF");
+                ConsoleHandler.PrintInfo(" |=> 7. Delete a customer");
                 ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");
 
                 ConsoleHandler.Print("Enter the operation number: ");
@@ -62,6 +65,24 @@ namespace UI.ConsoleManagers
                 {
                     Console.WriteLine("Invalid operation number.");
                 }
+            }
+        }
+        
+        private async Task BringToPdfAsync()
+        {
+            var result = await Service.BringToPdf();
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess($"Successfully packed to PDF ({result.Data})");
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = result.Data,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
             }
         }
 

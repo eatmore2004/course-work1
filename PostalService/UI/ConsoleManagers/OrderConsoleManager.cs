@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BLL.Abstractions.Interfaces;
 using Core.Models;
 using UI.ConsoleHandlers;
@@ -13,13 +14,14 @@ namespace UI.ConsoleManagers
 
         public override async Task PerformOperationsAsync()
         {
-            Dictionary<string, Func<Task>> actions = new Dictionary<string, Func<Task>>
+            var actions = new Dictionary<string, Func<Task>>
             {
                 { "1", DisplayAllOrdersAsync },
                 { "2", DisplayByName },
                 { "3", CreateOrderAsync },
                 { "4", UpdateOrderAsync },
-                { "5", DeleteOrderAsync },
+                { "5", BringToPdfAsync },
+                { "6", DeleteOrderAsync },
             };
 
             while (true)
@@ -37,7 +39,8 @@ namespace UI.ConsoleManagers
                 ConsoleHandler.PrintInfo(" |=> 2. Display order by name");
                 ConsoleHandler.PrintInfo(" |=> 3. Create a new order");
                 ConsoleHandler.PrintInfo(" |=> 4. Add a parcel to order");
-                ConsoleHandler.PrintInfo(" |=> 5. Delete order");
+                ConsoleHandler.PrintInfo(" |=> 5. Bring all to PDF");
+                ConsoleHandler.PrintInfo(" |=> 6. Delete order");
                 ConsoleHandler.PrintInfo(" <= 9. Back to Main Menu\n");
 
                 ConsoleHandler.Print("Enter the operation number: ");
@@ -62,10 +65,31 @@ namespace UI.ConsoleManagers
             }
         }
 
+        private async Task BringToPdfAsync()
+        {
+            var result = await Service.BringToPdf();
+            if (result.IsSuccessful)
+            {
+                ConsoleHandler.RaiseSuccess($"Successfully packed to PDF ({result.Data})");
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = result.Data,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                ConsoleHandler.RaiseError(result.Message);
+            }
+        }
+
         private async Task DisplayByName()
         {
             var orderName = ConsoleHandler.AskForString("Enter the order name", @"^[a-zA-Z]{4,}$");
             var orderResult = await Service.GetByName(orderName);
+            
+            ConsoleHandler.Clear();
+            
             if (orderResult.IsSuccessful)
             {
                 ConsoleHandler.Print(orderResult.Data.ToString());
@@ -129,7 +153,7 @@ namespace UI.ConsoleManagers
             ConsoleHandler.Clear();
             
             var result = await Service.DeleteOrder(orderName);
-            
+
             if (result.IsSuccessful)
             {
                 ConsoleHandler.RaiseSuccess("Order deleted successfully.");

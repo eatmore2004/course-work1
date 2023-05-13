@@ -90,4 +90,10 @@ public class StaffService : GenericService<Staff>, IStaffService
         var allStaff = GetAll().Result;
         return Task.FromResult(allStaff.Where(s => s.StaffPosition == position).ToList());
     }
+
+    public async Task<Result<string>> BringToPdf()
+    {
+        var result = await Repository.PackAllToPdf();
+        return result;
+    }
 }

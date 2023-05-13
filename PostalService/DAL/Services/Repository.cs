@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 using Core.Models;
 using DAL.Abstractions;
 
@@ -117,7 +119,64 @@ namespace DAL.Services
                 return new Result<bool>(isSuccessful: false, message: $"Failed to delete item. Exception: {ex.Message}");
             }
         }
-        
+
+        public async Task<Result<string>> PackAllToPdf()
+        {
+            var date = DateTime.Now.ToString("yyyyMMdd");
+
+            var fileNumber = 1;
+            var fileName = $"{typeof(T).Name}s[{date}].pdf";
+            
+            while (File.Exists(fileName))
+            {
+                fileName = $"{typeof(T).Name}s[{date}]({fileNumber}).pdf";
+                fileNumber++;
+            }
+
+            var document = new Document(PageSize.A4, 50, 50, 50, 50);
+
+            PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(fileName, FileMode.Create));
+
+            document.Open();
+
+            var items = await GetAllItemsAsync();
+            
+            if (items.Count == 0)
+            {
+                return new Result<string>(isSuccessful: false, message: "No items to pack.");
+            }
+
+            var elemNumber = 1;
+            
+            foreach (var item in items)
+            {
+                var text = item.ToString();
+                
+                var caption = new Paragraph($"{typeof(T).Name} {elemNumber++}\n\n", new Font(Font.FontFamily.HELVETICA, 28, Font.BOLD))
+                    {
+                        Alignment = Element.ALIGN_CENTER
+                    };
+
+                var paragraph = new Paragraph(text);
+
+                document.Add(caption);
+                document.Add(paragraph);
+
+                BarcodeQRCode qrcode = new BarcodeQRCode(text, 150, 150, null);
+
+                Image image = qrcode.GetImage();
+
+                image.SetAbsolutePosition((document.PageSize.Width - image.ScaledWidth) / 2, document.Bottom + 30);
+
+                document.Add(image);
+                document.NewPage();
+            }
+
+            document.Close();
+            
+            return new Result<string>(isSuccessful: true, data: fileName);
+        }
+
         private void EnsureFileExists()
         {
             if (!File.Exists(_filePath))

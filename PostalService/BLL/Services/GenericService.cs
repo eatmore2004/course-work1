@@ -7,18 +7,18 @@ namespace BLL.Services
 {
     public abstract class GenericService<T> : IGenericService<T> where T : BaseEntity
     {
-        private readonly IRepository<T> _repository;
+        protected readonly IRepository<T> Repository;
 
         protected GenericService(IRepository<T> repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         public virtual async Task Add(T obj)
         {
             try
             {
-                var result = await _repository.AddAsync(obj);
+                var result = await Repository.AddAsync(obj);
 
                 if (!result.IsSuccessful)
                 {
@@ -35,7 +35,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _repository.DeleteAsync(id);
+                var result = await Repository.DeleteAsync(id);
 
                 if (!result.IsSuccessful)
                 {
@@ -52,7 +52,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _repository.GetByIdAsync(id);
+                var result = await Repository.GetByIdAsync(id);
 
                 if (!result.IsSuccessful)
                 {
@@ -71,7 +71,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _repository.GetAllAsync();
+                var result = await Repository.GetAllAsync();
                 
                 if (!result.IsSuccessful)
                 {
@@ -90,7 +90,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _repository.GetByPredicateAsync(predicate);
+                var result = await Repository.GetByPredicateAsync(predicate);
                 
                 if (!result.IsSuccessful)
                 {
@@ -109,7 +109,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _repository.UpdateAsync(id, obj);
+                var result = await Repository.UpdateAsync(id, obj);
                 
                 if (!result.IsSuccessful)
                 {

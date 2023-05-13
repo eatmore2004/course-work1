@@ -96,4 +96,10 @@ public class CustomerService : GenericService<Customer>, ICustomerService
             return new Result<bool>(false, e.Message);
         }
     }
+
+    public async Task<Result<string>> BringToPdf()
+    {
+        var result = await Repository.PackAllToPdf();
+        return result;
+    }
 }

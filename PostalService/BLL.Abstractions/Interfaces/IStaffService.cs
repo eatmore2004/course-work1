@@ -14,4 +14,6 @@ public interface IStaffService : IGenericService<Staff>
     Task<Result<Staff>> GetStaffByName(string name, string surname);
  
     Task<List<Staff>> GetStaffByPosition(Position position);
+    
+    Task<Result<string>> BringToPdf();
 }

@@ -21,10 +21,9 @@ public class Customer : BaseEntity
 
     public override string ToString()
     {
-        return "------------------------------\n" +
-               $"| Name: {Name} {Surname}\n" +
-               $"| Email: {Email}\n" +
-               $"| Subscription: {SubscriptionType}\n" +
-               $"| Balance (EUR): {Balance}\n";
+        return $" Name: {Name} {Surname}\n" +
+               $" Email: {Email}\n" +
+               $" Subscription: {SubscriptionType}\n" +
+               $" Balance (EUR): {Balance}\n";
     }
 }

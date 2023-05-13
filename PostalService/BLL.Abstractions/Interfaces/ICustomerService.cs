@@ -16,5 +16,7 @@ namespace BLL.Abstractions.Interfaces
         Task<Result<Customer>> GetCustomerByName(string name, string surname);
 
         Task<Result<bool>> DeleteCustomer(string name, string surname);
+
+        Task<Result<string>> BringToPdf();
     }
 }

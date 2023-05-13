@@ -79,4 +79,10 @@ public class ParcelService : GenericService<Parcel>, IParcelService
             return new Result<bool>(false, e.Message);
         }
     }
+
+    public async Task<Result<string>> BringToPdf()
+    {
+        var result = await Repository.PackAllToPdf();
+        return result;
+    }
 }
